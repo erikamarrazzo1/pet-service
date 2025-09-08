@@ -7,7 +7,7 @@ Pet Service is a Spring Boot microservice exposing REST APIs to manage pets with
 The current implementation uses an in-memory H2 database for simplicity, so the service can run ready to use without any external setup.
 
 The codebase is structured to keep the domain layer independent of persistence, 
-making it easy to replace H2 with a NoSQL database (for example MongoDB) in the future.
+making it easy to replace H2 with a non-relational database in the future.
 
 ## Tech Stack
 
@@ -41,6 +41,13 @@ docker run -d --name pet-service -p 8080:8080 pet-service:v1.0.0
 ## Test APIs
 
 Swagger: http://localhost:8080/swagger-ui/index.html
+
+## H2 Console
+
+To view the `Pet` table, you can access the H2 console at: http://localhost:8080/h2-console
+
+**JDBC URL**: `jdbc:h2:mem:local` \
+The username and password are specified in the `application.yml` file.
 
 ## Technical Details
 
