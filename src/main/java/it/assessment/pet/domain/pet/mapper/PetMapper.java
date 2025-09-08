@@ -1,6 +1,7 @@
 package it.assessment.pet.domain.pet.mapper;
 
-import it.assessment.pet.application.dto.PetDto;
+import it.assessment.pet.application.dto.PetRequestDto;
+import it.assessment.pet.application.dto.PetResponseDto;
 import it.assessment.pet.domain.pet.model.Pet;
 import it.assessment.pet.domain.pet.model.PetSpecies;
 import org.springframework.stereotype.Component;
@@ -8,31 +9,40 @@ import org.springframework.stereotype.Component;
 @Component
 public class PetMapper {
 
-    public PetDto toDto(Pet pet) {
-        PetDto petDto = new PetDto();
-        petDto.setId(pet.getId());
-        petDto.setName(pet.getName());
-        petDto.setSpecies(pet.getSpecies().name());
-        petDto.setAge(pet.getAge());
-        petDto.setOwnerName(pet.getOwnerName());
-        return petDto;
+    public PetResponseDto toDto(Pet pet) {
+        PetResponseDto petResponseDto = new PetResponseDto();
+        petResponseDto.setId(pet.getId());
+        petResponseDto.setName(pet.getName());
+        petResponseDto.setSpecies(pet.getSpecies().name());
+        petResponseDto.setAge(pet.getAge());
+        petResponseDto.setOwnerName(pet.getOwnerName());
+        return petResponseDto;
     }
 
-    public Pet toDomain(PetDto petDto) {
+    public Pet toDomain(PetResponseDto petResponseDto) {
         Pet pet = new Pet();
-        pet.setId(petDto.getId());
-        pet.setName(petDto.getName());
-        pet.setAge(petDto.getAge());
-        pet.setSpecies(PetSpecies.valueOf(petDto.getSpecies().toUpperCase()));
-        pet.setOwnerName(petDto.getOwnerName());
+        pet.setId(petResponseDto.getId());
+        pet.setName(petResponseDto.getName());
+        pet.setAge(petResponseDto.getAge());
+        pet.setSpecies(PetSpecies.valueOf(petResponseDto.getSpecies().toUpperCase()));
+        pet.setOwnerName(petResponseDto.getOwnerName());
         return pet;
     }
 
-    public Pet partialUpdate(Pet pet, PetDto petDto) {
-        pet.setName(petDto.getName() != null ? petDto.getName() : pet.getName());
-        pet.setAge(petDto.getAge() != null ? petDto.getAge() : pet.getAge());
-        pet.setSpecies(petDto.getSpecies() != null ? PetSpecies.valueOf(petDto.getSpecies().toUpperCase()) : pet.getSpecies());
-        pet.setOwnerName(petDto.getOwnerName() != null ? petDto.getOwnerName() : pet.getOwnerName());
+    public Pet createFromRequest(PetRequestDto petRequestDto) {
+        Pet pet = new Pet();
+        pet.setName(petRequestDto.getName());
+        pet.setAge(petRequestDto.getAge());
+        pet.setSpecies(PetSpecies.valueOf(petRequestDto.getSpecies().toUpperCase()));
+        pet.setOwnerName(petRequestDto.getOwnerName());
+        return pet;
+    }
+
+    public Pet partialUpdate(Pet pet, PetRequestDto petRequestDto) {
+        pet.setName(petRequestDto.getName() != null ? petRequestDto.getName() : pet.getName());
+        pet.setAge(petRequestDto.getAge() != null ? petRequestDto.getAge() : pet.getAge());
+        pet.setSpecies(petRequestDto.getSpecies() != null ? PetSpecies.valueOf(petRequestDto.getSpecies().toUpperCase()) : pet.getSpecies());
+        pet.setOwnerName(petRequestDto.getOwnerName() != null ? petRequestDto.getOwnerName() : pet.getOwnerName());
         return pet;
     }
 }

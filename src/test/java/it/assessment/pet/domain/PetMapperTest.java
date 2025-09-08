@@ -1,6 +1,7 @@
 package it.assessment.pet.domain;
 
-import it.assessment.pet.application.dto.PetDto;
+import it.assessment.pet.application.dto.PetRequestDto;
+import it.assessment.pet.application.dto.PetResponseDto;
 import it.assessment.pet.domain.pet.mapper.PetMapper;
 import it.assessment.pet.domain.pet.model.Pet;
 import it.assessment.pet.domain.pet.model.PetSpecies;
@@ -23,7 +24,7 @@ class PetMapperTest {
         pet.setAge(1);
         pet.setOwnerName("Mario Rossi");
 
-        PetDto dto = petMapper.toDto(pet);
+        PetResponseDto dto = petMapper.toDto(pet);
 
         assertNotNull(dto);
         assertEquals(1L, dto.getId());
@@ -36,7 +37,7 @@ class PetMapperTest {
     @ParameterizedTest
     @EnumSource(PetSpecies.class)
     void test_fromDtoToDomain(PetSpecies petSpecies) {
-        PetDto dto = new PetDto();
+        PetResponseDto dto = new PetResponseDto();
         dto.setId(1L);
         dto.setName("Fido");
         dto.setSpecies(petSpecies.name());
@@ -63,13 +64,13 @@ class PetMapperTest {
         pet.setAge(1);
         pet.setOwnerName("Mario Rossi");
 
-        PetDto updateDto = new PetDto();
-        updateDto.setName("Fido Updated");
-        updateDto.setSpecies(petSpecies.name());
-        updateDto.setAge(1);
-        updateDto.setOwnerName("Mario Rossi Updated");
+        PetRequestDto objectUpdated = new PetRequestDto();
+        objectUpdated.setName("Fido Updated");
+        objectUpdated.setSpecies(petSpecies.name());
+        objectUpdated.setAge(1);
+        objectUpdated.setOwnerName("Mario Rossi Updated");
 
-        Pet updatedPet = petMapper.partialUpdate(pet, updateDto);
+        Pet updatedPet = petMapper.partialUpdate(pet, objectUpdated);
 
         assertEquals("Fido Updated", updatedPet.getName());
         assertEquals(petSpecies, updatedPet.getSpecies());
@@ -87,7 +88,7 @@ class PetMapperTest {
         pet.setAge(1);
         pet.setOwnerName("Mario Rossi");
 
-        PetDto updateDto = new PetDto();
+        PetRequestDto updateDto = new PetRequestDto();
         updateDto.setName(null);
         updateDto.setSpecies(null);
         updateDto.setAge(5);

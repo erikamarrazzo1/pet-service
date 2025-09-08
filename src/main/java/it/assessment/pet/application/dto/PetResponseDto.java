@@ -5,7 +5,7 @@ import lombok.*;
 @Setter
 @Getter
 @ToString
-public class PetDto {
+public class PetResponseDto {
     private Long id;
     private String name;
     private String species;

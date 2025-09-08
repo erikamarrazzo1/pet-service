@@ -8,7 +8,7 @@ import it.assessment.pet.domain.pet.model.Pet;
 import it.assessment.pet.domain.pet.model.PetSpecies;
 import org.junit.jupiter.api.Test;
 
-public class PetTest {
+class PetTest {
 
     @Test
     void test_setAge_negativeValue() {

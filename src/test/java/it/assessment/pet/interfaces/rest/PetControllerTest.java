@@ -1,7 +1,8 @@
 package it.assessment.pet.interfaces.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.assessment.pet.application.dto.PetDto;
+import it.assessment.pet.application.dto.PetRequestDto;
+import it.assessment.pet.application.dto.PetResponseDto;
 import it.assessment.pet.application.service.PetService;
 import it.assessment.pet.domain.pet.exception.InvalidPetAgeExceptionPet;
 import it.assessment.pet.domain.pet.exception.PetNotFoundExceptionPet;
@@ -36,19 +37,19 @@ class PetControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private PetDto dto1;
-    private PetDto dto2;
+    private PetResponseDto dto1;
+    private PetResponseDto dto2;
 
     @BeforeEach
     void setUp() {
-        dto1 = new PetDto();
+        dto1 = new PetResponseDto();
         dto1.setId(1L);
         dto1.setName("Fido");
         dto1.setSpecies(PetSpecies.DOG.name());
         dto1.setAge(1);
         dto1.setOwnerName("Mario Rossi");
 
-        dto2 = new PetDto();
+        dto2 = new PetResponseDto();
         dto2.setId(2L);
         dto2.setName("Milo");
         dto2.setSpecies(PetSpecies.CAT.name());
@@ -58,7 +59,7 @@ class PetControllerTest {
 
     @Test
     void test_createPet_ok() throws Exception {
-        when(petService.create(any(PetDto.class))).thenReturn(dto1);
+        when(petService.create(any(PetRequestDto.class))).thenReturn(dto1);
 
         mockMvc.perform(post("/api/v1/pets")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +71,7 @@ class PetControllerTest {
                 .andExpect(jsonPath("$.age").value(1))
                 .andExpect(jsonPath("$.ownerName").value("Mario Rossi"));
 
-        verify(petService).create(any(PetDto.class));
+        verify(petService).create(any(PetRequestDto.class));
     }
 
     @Test
@@ -84,19 +85,19 @@ class PetControllerTest {
 
     @Test
     void test_createPet_internalServerError() {
-        when(petService.create(any(PetDto.class))).thenThrow(new RuntimeException());
+        when(petService.create(any(PetRequestDto.class))).thenThrow(new RuntimeException());
 
         assertThrows(ServletException.class, () -> mockMvc.perform(post("/api/v1/pets")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto1)))
                 .andExpect(status().isInternalServerError()));
 
-        verify(petService).create(any(PetDto.class));
+        verify(petService).create(any(PetRequestDto.class));
     }
 
     @Test
     void test_createPet_invalidInputAge() throws Exception {
-        when(petService.create(any(PetDto.class))).thenThrow(new InvalidPetAgeExceptionPet(-1));
+        when(petService.create(any(PetRequestDto.class))).thenThrow(new InvalidPetAgeExceptionPet(-1));
 
         mockMvc.perform(post("/api/v1/pets")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -148,14 +149,14 @@ class PetControllerTest {
 
     @Test
     void test_updatePet_ok() throws Exception {
-        PetDto updatedDto = new PetDto();
+        PetResponseDto updatedDto = new PetResponseDto();
         updatedDto.setId(1L);
         updatedDto.setName("Fido Updated");
         updatedDto.setSpecies(PetSpecies.DOG.name());
         updatedDto.setAge(1);
         updatedDto.setOwnerName("Mario Rossi");
 
-        when(petService.update(eq(1L), any(PetDto.class))).thenReturn(updatedDto);
+        when(petService.update(eq(1L), any(PetRequestDto.class))).thenReturn(updatedDto);
 
         mockMvc.perform(patch("/api/v1/pets/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -167,7 +168,7 @@ class PetControllerTest {
                 .andExpect(jsonPath("$.age").value(1))
                 .andExpect(jsonPath("$.ownerName").value("Mario Rossi"));
 
-        verify(petService).update(eq(1L), any(PetDto.class));
+        verify(petService).update(eq(1L), any(PetRequestDto.class));
     }
 
     @Test

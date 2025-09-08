@@ -1,6 +1,7 @@
 package it.assessment.pet.application.service;
 
-import it.assessment.pet.application.dto.PetDto;
+import it.assessment.pet.application.dto.PetRequestDto;
+import it.assessment.pet.application.dto.PetResponseDto;
 import it.assessment.pet.domain.pet.exception.PetNotFoundExceptionPet;
 import it.assessment.pet.domain.pet.mapper.PetMapper;
 import it.assessment.pet.domain.pet.model.Pet;
@@ -22,7 +23,8 @@ class PetServiceTest {
     private PetMapper petMapper;
     private PetService petService;
 
-    private PetDto petDto;
+    private PetResponseDto petResponseDto;
+    private PetRequestDto petRequestDto;
     private Pet petDomain;
 
     @BeforeEach
@@ -31,11 +33,18 @@ class PetServiceTest {
         petMapper = mock(PetMapper.class);
         petService = new PetService(petRepository, petMapper);
 
-        petDto = new PetDto();
-        petDto.setName("Fido");
-        petDto.setSpecies("DOG");
-        petDto.setAge(1);
-        petDto.setOwnerName("Mario Rossi");
+        petResponseDto = new PetResponseDto();
+        petResponseDto.setId(1L);
+        petResponseDto.setName("Fido");
+        petResponseDto.setSpecies("DOG");
+        petResponseDto.setAge(1);
+        petResponseDto.setOwnerName("Mario Rossi");
+
+        petRequestDto = new PetRequestDto();
+        petRequestDto.setName("Fido");
+        petRequestDto.setSpecies("DOG");
+        petRequestDto.setAge(1);
+        petRequestDto.setOwnerName("Mario Rossi");
 
         petDomain = new Pet();
         petDomain.setId(1L);
@@ -47,13 +56,13 @@ class PetServiceTest {
 
     @Test
     void test_createPet_successfully() {
-        when(petMapper.toDomain(petDto)).thenReturn(petDomain);
+        when(petMapper.createFromRequest(petRequestDto)).thenReturn(petDomain);
         petDomain.setId(1L);
         when(petRepository.save(petDomain)).thenReturn(petDomain);
-        petDto.setId(petDomain.getId());
-        when(petMapper.toDto(petDomain)).thenReturn(petDto);
+        petResponseDto.setId(petDomain.getId());
+        when(petMapper.toDto(petDomain)).thenReturn(petResponseDto);
 
-        PetDto result = petService.create(petDto);
+        PetResponseDto result = petService.create(petRequestDto);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -69,9 +78,9 @@ class PetServiceTest {
     @Test
     void test_getPetById_successfully() {
         when(petRepository.findById(1L)).thenReturn(Optional.of(petDomain));
-        when(petMapper.toDto(petDomain)).thenReturn(petDto);
+        when(petMapper.toDto(petDomain)).thenReturn(petResponseDto);
 
-        PetDto result = petService.getById(1L);
+        PetResponseDto result = petService.getById(1L);
 
         assertNotNull(result);
         assertEquals("Fido", result.getName());
@@ -89,18 +98,21 @@ class PetServiceTest {
 
     @Test
     void test_updatePet_successfully() {
-        PetDto petDtoUpdated = petDto;
-        petDtoUpdated.setName("Max");
+        PetRequestDto petRequestDtoUpdated = petRequestDto;
+        petRequestDtoUpdated.setName("Max");
+
+        PetResponseDto petResponseDtoUpdated = petResponseDto;
+        petResponseDtoUpdated.setName("Max");
 
         Pet petUpdated = petDomain;
         petUpdated.setName("Max");
 
         when(petRepository.findById(1L)).thenReturn(Optional.of(petDomain));
-        when(petMapper.partialUpdate(petDomain, petDtoUpdated)).thenReturn(petUpdated);
+        when(petMapper.partialUpdate(petDomain, petRequestDtoUpdated)).thenReturn(petUpdated);
         when(petRepository.save(petUpdated)).thenReturn(petUpdated);
-        when(petMapper.toDto(petUpdated)).thenReturn(petDtoUpdated);
+        when(petMapper.toDto(petUpdated)).thenReturn(petResponseDtoUpdated);
 
-        PetDto result = petService.update(1L, petDtoUpdated);
+        PetResponseDto result = petService.update(1L, petRequestDtoUpdated);
 
         assertEquals("Max", result.getName());
 
@@ -111,7 +123,7 @@ class PetServiceTest {
 
     @Test
     void test_updatePet_notFound() {
-        assertThrows(PetNotFoundExceptionPet.class, () -> petService.update(1L, petDto));
+        assertThrows(PetNotFoundExceptionPet.class, () -> petService.update(1L, petRequestDto));
     }
 
     @Test
@@ -134,8 +146,8 @@ class PetServiceTest {
 
         List<Pet> pets = Arrays.asList(pet1, pet2);
 
-        PetDto dto1 = petDto;
-        PetDto dto2 = new PetDto();
+        PetResponseDto dto1 = petResponseDto;
+        PetResponseDto dto2 = new PetResponseDto();
         dto2.setId(pet2.getId());
         dto2.setName(pet2.getName());
         dto2.setAge(pet2.getAge());
@@ -147,7 +159,7 @@ class PetServiceTest {
         when(petMapper.toDto(pet1)).thenReturn(dto1);
         when(petMapper.toDto(pet2)).thenReturn(dto2);
 
-        List<PetDto> result = petService.getAll();
+        List<PetResponseDto> result = petService.getAll();
 
         assertEquals(2, result.size());
         assertEquals("Fido", result.get(0).getName());
